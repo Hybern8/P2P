@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import { Date, SmallDateTime } from 'mssql';
 
 export default function Dashboard() {
   const [userData, setUserData] = useState(null);
@@ -10,7 +11,6 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch user data (name, policy, etc.)
         const userResponse = await fetch('/api/getUserData');
         if (userResponse.status === 401) {
           router.push('/login');
@@ -19,7 +19,6 @@ export default function Dashboard() {
         const user = await userResponse.json();
         setUserData(user);
 
-        // Fetch total contributions
         const contributionsResponse = await fetch('/api/getTotalContributions');
         const contributionsData = await contributionsResponse.json();
         setTotalContributions(contributionsData.totalContributions || 0);
@@ -41,9 +40,11 @@ export default function Dashboard() {
       <h1 className="text-3xl font-bold mb-4">Welcome, {userData.name}!</h1>
 
       <div className="w-full max-w-md bg-white p-6 rounded-lg shadow-lg mb-6">
-        <h2 className="text-2xl font-bold">Policy Details</h2>
+        <h2 className="text-2xl font-bold mb-2">Policy Details</h2>
         <p><strong>Policy Type:</strong> {userData.policy}</p>
-        <p><strong>Total Contributions:</strong> ₦{totalContributions}</p>
+        <p><strong>Pool:</strong> {userData.pool}</p>
+        <p><strong>Benefit:</strong> ₦{Number(userData.benefit).toLocaleString()}</p>
+        <p><strong>Total Contributions:</strong> ₦{totalContributions.toLocaleString()}</p>
       </div>
 
       <div className="w-full max-w-md bg-white p-6 rounded-lg shadow-lg mb-6">

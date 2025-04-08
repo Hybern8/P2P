@@ -19,43 +19,60 @@ export default async function handler(req, res) {
   }
 
   const cookies = req.headers.cookie ? parse(req.headers.cookie) : {};
-  const userId = parseInt(cookies.auth_token, 10); // Make sure auth_token is set
+  const userId = parseInt(cookies.auth_token, 10);
 
   if (!userId) {
     return res.status(401).json({ error: 'Unauthorized: No valid auth token' });
   }
 
-  const { policy } = req.body;
-  const validPolicies = ['basic', 'premium', 'comprehensive'];
+  const { policy, pool, benefit, startDate } = req.body;
 
-  if (!validPolicies.includes(policy.toLowerCase())) {
+  const validPolicies = ['basic', 'premium', 'comprehensive'];
+  const validPools = ['Car A', 'Car B', 'Car C', 'Car D'];
+  const validBenefits = ['200000', '500000', '750000', '1000000'];
+
+  if (!validPolicies.includes(policy?.toLowerCase())) {
     return res.status(400).json({ error: 'Invalid policy type' });
   }
+  if (!validPools.includes(pool)) {
+    return res.status(400).json({ error: 'Invalid pool selection' });
+  }
+  if (!validBenefits.includes(benefit)) {
+    return res.status(400).json({ error: 'Invalid benefit value' });
+  }
+  if (!startDate) {
+    return res.status(400).json({ error: 'Start date is required' });
+  }
 
-  let pool;
+  let db;
 
   try {
-    pool = await sql.connect(config);
+    db = await sql.connect(config);
 
-    // Check if user exists in the database
-    const result = await pool.request()
+    const result = await db.request()
       .input('userId', sql.Int, userId)
       .input('policy', sql.VarChar, policy)
+      .input('pool', sql.VarChar, pool)
+      .input('benefit', sql.Int, benefit)
+      .input('startDate', sql.Date, startDate)
       .query(`
         UPDATE Users
-        SET policy = @policy
+        SET policy = @policy,
+            pool = @pool,
+            benefit = @benefit,
+            startDate = @startDate
         WHERE id = @userId
       `);
 
     if (result.rowsAffected[0] === 0) {
-      return res.status(404).json({ error: 'User not found or policy already set' });
+      return res.status(404).json({ error: 'User not found or not updated' });
     }
 
-    return res.status(200).json({ message: 'Policy updated successfully' });
+    return res.status(200).json({ message: 'Policy info updated successfully' });
   } catch (err) {
-    console.error('Error updating policy:', err);
-    return res.status(500).json({ error: 'Failed to update policy' });
+    console.error('Error updating user:', err);
+    return res.status(500).json({ error: 'Failed to update policy info' });
   } finally {
-    if (pool) await pool.close();
+    if (db) await db.close();
   }
 }
