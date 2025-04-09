@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { Date, SmallDateTime } from 'mssql';
 
 export default function Dashboard() {
   const [userData, setUserData] = useState(null);
@@ -35,6 +34,14 @@ export default function Dashboard() {
   if (loading) return <p>Loading dashboard...</p>;
   if (!userData) return <p>Error: Unable to load user data.</p>;
 
+  const formattedStartDate = userData.startDate
+    ? new Date(userData.startDate).toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+      })
+    : 'N/A';
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
       <h1 className="text-3xl font-bold mb-4">Welcome, {userData.name}!</h1>
@@ -44,6 +51,7 @@ export default function Dashboard() {
         <p><strong>Policy Type:</strong> {userData.policy}</p>
         <p><strong>Pool:</strong> {userData.pool}</p>
         <p><strong>Benefit:</strong> ₦{Number(userData.benefit).toLocaleString()}</p>
+        <p><strong>Policy Start Date:</strong> {formattedStartDate}</p>
         <p><strong>Total Contributions:</strong> ₦{totalContributions.toLocaleString()}</p>
       </div>
 

@@ -6,6 +6,9 @@ export default function PolicySelection() {
   const [selectedPool, setSelectedPool] = useState('');
   const [selectedBenefit, setSelectedBenefit] = useState('');
   const [startDate, setStartDate] = useState('');
+  const [dob, setDob] = useState('');
+  const [gender, setGender] = useState('');
+  const [occupation, setOccupation] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
 
@@ -13,8 +16,8 @@ export default function PolicySelection() {
     e.preventDefault();
     setError('');
 
-    if (!selectedPolicy || !selectedPool || !selectedBenefit || !startDate) {
-      setError('Please complete all selections including the start date.');
+    if (!selectedPolicy || !selectedPool || !selectedBenefit || !startDate || !dob || !gender || !occupation) {
+      setError('Please complete all fields including DOB, gender, and occupation.');
       return;
     }
 
@@ -27,7 +30,10 @@ export default function PolicySelection() {
           policy: selectedPolicy,
           pool: selectedPool,
           benefit: selectedBenefit,
-          startDate
+          startDate,
+          dob,
+          gender,
+          occupation
         }),
       });
 
@@ -108,6 +114,50 @@ export default function PolicySelection() {
             required
             className="w-full p-2 mt-2 border border-gray-300 rounded"
           />
+        </div>
+
+        <div className="mb-4">
+          <label htmlFor="dob" className="block text-lg">Date of Birth</label>
+          <input
+            type="date"
+            id="dob"
+            value={dob}
+            onChange={(e) => setDob(e.target.value)}
+            required
+            className="w-full p-2 mt-2 border border-gray-300 rounded"
+          />
+        </div>
+
+        <div className="mb-4">
+          <label htmlFor="gender" className="block text-lg">Gender</label>
+          <select
+            id="gender"
+            value={gender}
+            onChange={(e) => setGender(e.target.value)}
+            required
+            className="w-full p-2 mt-2 border border-gray-300 rounded"
+          >
+            <option value="">Select gender</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
+        </div>
+
+        <div className="mb-4">
+          <label htmlFor="occupation" className="block text-lg">Occupation</label>
+          <select
+            id="occupation"
+            value={occupation}
+            onChange={(e) => setOccupation(e.target.value)}
+            required
+            className="w-full p-2 mt-2 border border-gray-300 rounded"
+          >
+            <option value="">Select occupation</option>
+            <option value="IT Executive">IT Executive</option>
+            <option value="Business Executive">Business Executive</option>
+            <option value="Artisan">Artisan</option>
+            <option value="Health Executive">Health Executive</option>
+          </select>
         </div>
 
         {error && <p className="text-red-600 mb-2">{error}</p>}

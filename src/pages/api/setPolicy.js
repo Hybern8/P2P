@@ -25,12 +25,15 @@ export default async function handler(req, res) {
     return res.status(401).json({ error: 'Unauthorized: No valid auth token' });
   }
 
-  const { policy, pool, benefit, startDate } = req.body;
+  const { policy, pool, benefit, startDate, dob, gender, occupation } = req.body;
 
   const validPolicies = ['basic', 'premium', 'comprehensive'];
   const validPools = ['Car A', 'Car B', 'Car C', 'Car D'];
   const validBenefits = ['200000', '500000', '750000', '1000000'];
+  const validGenders = ['male', 'female'];
+  const validOccupations = ['IT Executive', 'Business Executive', 'Artisan', 'Health Executive'];
 
+  // Validation
   if (!validPolicies.includes(policy?.toLowerCase())) {
     return res.status(400).json({ error: 'Invalid policy type' });
   }
@@ -42,6 +45,15 @@ export default async function handler(req, res) {
   }
   if (!startDate) {
     return res.status(400).json({ error: 'Start date is required' });
+  }
+  if (!dob) {
+    return res.status(400).json({ error: 'Date of birth is required' });
+  }
+  if (!validGenders.includes(gender?.toLowerCase())) {
+    return res.status(400).json({ error: 'Invalid gender value' });
+  }
+  if (!validOccupations.includes(occupation)) {
+    return res.status(400).json({ error: 'Invalid occupation' });
   }
 
   let db;
@@ -55,12 +67,18 @@ export default async function handler(req, res) {
       .input('pool', sql.VarChar, pool)
       .input('benefit', sql.Int, benefit)
       .input('startDate', sql.Date, startDate)
+      .input('dob', sql.Date, dob)
+      .input('gender', sql.VarChar, gender)
+      .input('occupation', sql.VarChar, occupation)
       .query(`
         UPDATE Users
         SET policy = @policy,
             pool = @pool,
             benefit = @benefit,
-            startDate = @startDate
+            startDate = @startDate,
+            dob = @dob,
+            gender = @gender,
+            occupation = @occupation
         WHERE id = @userId
       `);
 
