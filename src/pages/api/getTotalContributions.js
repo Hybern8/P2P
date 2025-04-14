@@ -31,7 +31,7 @@ export default async function handler(req, res) {
     const result = await pool.request()
       .input('userId', sql.Int, userId)
       .query(`
-        SELECT SUM(amount) AS totalContributions
+        SELECT SUM(totalPremium) AS totalContributions
         FROM Contributions
         WHERE userId = @userId
       `);

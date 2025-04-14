@@ -3,7 +3,6 @@ import Link from 'next/link';
 
 export default function PolicySelection() {
   const [selectedPolicy, setSelectedPolicy] = useState('');
-  const [selectedPool, setSelectedPool] = useState('');
   const [selectedBenefit, setSelectedBenefit] = useState('');
   const [startDate, setStartDate] = useState('');
   const [dob, setDob] = useState('');
@@ -16,7 +15,7 @@ export default function PolicySelection() {
     e.preventDefault();
     setError('');
 
-    if (!selectedPolicy || !selectedPool || !selectedBenefit || !startDate || !dob || !gender || !occupation) {
+    if (!selectedPolicy || !selectedBenefit || !startDate || !dob || !gender || !occupation) {
       setError('Please complete all fields including DOB, gender, and occupation.');
       return;
     }
@@ -28,7 +27,6 @@ export default function PolicySelection() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           policy: selectedPolicy,
-          pool: selectedPool,
           benefit: selectedBenefit,
           startDate,
           dob,
@@ -55,7 +53,7 @@ export default function PolicySelection() {
       <h1 className="text-3xl font-bold mb-4">Select Your Insurance Options</h1>
       <form onSubmit={handleSubmit} className="w-full max-w-md bg-white p-6 rounded-lg shadow-lg">
         <div className="mb-4">
-          <label htmlFor="policy" className="block text-lg">Choose Policy</label>
+          <label htmlFor="policy" className="block text-lg">Choose Policy Type</label>
           <select
             id="policy"
             value={selectedPolicy}
@@ -64,26 +62,7 @@ export default function PolicySelection() {
             className="w-full p-2 mt-2 border border-gray-300 rounded"
           >
             <option value="">Select a policy</option>
-            <option value="basic">Basic</option>
-            <option value="premium">Premium</option>
-            <option value="comprehensive">Comprehensive</option>
-          </select>
-        </div>
-
-        <div className="mb-4">
-          <label htmlFor="pool" className="block text-lg">Choose Pool</label>
-          <select
-            id="pool"
-            value={selectedPool}
-            onChange={(e) => setSelectedPool(e.target.value)}
-            required
-            className="w-full p-2 mt-2 border border-gray-300 rounded"
-          >
-            <option value="">Select a pool</option>
-            <option value="Car A">Car A</option>
-            <option value="Car B">Car B</option>
-            <option value="Car C">Car C</option>
-            <option value="Car D">Car D</option>
+            <option value="OneLife Policy">OneLife Policy</option>
           </select>
         </div>
 
@@ -97,10 +76,10 @@ export default function PolicySelection() {
             className="w-full p-2 mt-2 border border-gray-300 rounded"
           >
             <option value="">Select a benefit</option>
-            <option value="200000">₦200,000</option>
-            <option value="500000">₦500,000</option>
-            <option value="750000">₦750,000</option>
             <option value="1000000">₦1,000,000</option>
+            <option value="2000000">₦2,000,000</option>
+            <option value="3000000">₦3,000,000</option>
+            <option value="4000000">₦4,000,000</option>
           </select>
         </div>
 
@@ -138,8 +117,8 @@ export default function PolicySelection() {
             className="w-full p-2 mt-2 border border-gray-300 rounded"
           >
             <option value="">Select gender</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
           </select>
         </div>
 
@@ -154,9 +133,9 @@ export default function PolicySelection() {
           >
             <option value="">Select occupation</option>
             <option value="IT Executive">IT Executive</option>
-            <option value="Business Executive">Business Executive</option>
-            <option value="Artisan">Artisan</option>
+            <option value="Creative Executive">Creative Executive</option>
             <option value="Health Executive">Health Executive</option>
+            <option value="Business Executive">Business Executive</option>
           </select>
         </div>
 

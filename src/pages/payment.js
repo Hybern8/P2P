@@ -7,37 +7,60 @@ export default function Payment() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const policyPrices = {
-    basic: 5000,
-    premium: 10000,
-    comprehensive: 15000
-  };
-
   useEffect(() => {
-    async function fetchPolicy() {
+    async function fetchPremiumDetails() {
       try {
-        const res = await fetch('/api/getUserPolicy');
+        const res = await fetch('/api/getUserPremium');
         const data = await res.json();
 
         if (!res.ok) {
-          throw new Error(data.error || 'Could not fetch policy');
+          throw new Error(data.error || 'Could not fetch premium details');
         }
 
-        const policy = data.policy?.toLowerCase();
+        const { policy, pool, benefit } = data;
 
-        if (!policy || !policyPrices[policy]) {
-          throw new Error('Invalid or missing policy. Please re-select your policy.');
+        const rateRes = await fetch('/api/getRate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ pool })
+        });
+
+        const rateData = await rateRes.json();
+
+        if (!rateRes.ok) {
+          throw new Error(rateData.error || 'Could not fetch rate');
         }
+
+        const qx_loess = rateData.qx_loess;
+
+        const riskPremium = benefit * qx_loess;
+        const reinsurancePremium = 0.1 * riskPremium;
+        const regulatorFee = 0.01 * riskPremium;
+        const opsFee = 2000;
+        const totalPremium = riskPremium + reinsurancePremium + regulatorFee + opsFee;
+
+        // Save contribution details
+        await fetch('/api/recordPaymentBreakdown', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            riskPremium,
+            reinsurancePremium,
+            regulatorFee,
+            opsFee,
+            totalPremium
+          })
+        });
 
         setSelectedPolicy(policy);
-        setAmount(policyPrices[policy]);
+        setAmount(totalPremium);
       } catch (err) {
-        console.error('⚠️ Failed to fetch policy:', err);
+        console.error('⚠️ Failed to fetch premium details:', err);
         setError(err.message);
       }
     }
 
-    fetchPolicy();
+    fetchPremiumDetails();
   }, []);
 
   const handlePayment = async () => {
@@ -50,19 +73,8 @@ export default function Payment() {
     setError('');
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 2000)); // simulate payment gateway
-
-      const response = await fetch('/api/recordPayment', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount })
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Payment failed');
-      }
+      // Simulate payment
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
       alert('✅ Payment successful!');
       window.location.href = '/dashboard';
@@ -85,7 +97,7 @@ export default function Payment() {
             <p className="text-lg">
               You are about to pay for the <strong>{selectedPolicy?.toUpperCase()}</strong> policy.
             </p>
-            <p className="text-lg mt-4">Amount: ₦{amount}</p>
+            <p className="text-lg mt-4">Amount: ₦{amount.toFixed(2)}</p>
             <button
               onClick={handlePayment}
               className="w-full bg-blue-500 text-white p-2 mt-4 rounded-full"
