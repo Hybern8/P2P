@@ -17,9 +17,18 @@ const config = {
 function calculateAgeNextBirthday(dobStr) {
   const dob = new Date(dobStr);
   const today = new Date();
-  const thisYearBirthday = new Date(today.getFullYear(), dob.getMonth(), dob.getDate());
-  const age = today.getFullYear() - dob.getFullYear();
-  return today < thisYearBirthday ? age + 1 : age + 1;
+
+  const birthMonth = dob.getMonth();
+  const currentMonth = today.getMonth();
+
+  const birthYear = dob.getFullYear();
+  const currentYear = today.getFullYear();
+
+  const age = currentYear - birthYear;
+
+  // If birth month is earlier than or same as current month, birthday has happened or is this month → +1
+  // Otherwise, birthday is yet to come this year → age remains the same
+  return currentMonth >= birthMonth ? age + 1 : age;
 }
 
 export default async function handler(req, res) {
