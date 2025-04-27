@@ -52,7 +52,8 @@ export default function Dashboard() {
         <p><strong>Pool:</strong> {userData.pool}</p>
         <p><strong>Benefit:</strong> ₦{Number(userData.benefit).toLocaleString()}</p>
         <p><strong>Policy Start Date:</strong> {formattedStartDate}</p>
-        <p><strong>Total Contributions:</strong> ₦{totalContributions.toLocaleString()}</p>
+        <p><strong>Premium Paid:</strong> ₦{totalContributions.toLocaleString()}</p>
+        <p><strong>Expected Refund:</strong> ₦{Number(userData.noClaimRefund || 0).toLocaleString()}</p>
       </div>
 
       <div className="w-full max-w-md bg-white p-6 rounded-lg shadow-lg mb-6">

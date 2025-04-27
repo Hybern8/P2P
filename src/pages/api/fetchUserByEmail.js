@@ -1,4 +1,3 @@
-// pages/api/fetchUserByEmail.js
 import sql from 'mssql';
 import { parse } from 'cookie';
 
@@ -17,43 +16,41 @@ const config = {
 export default async function handler(req, res) {
   let pool;
 
-  // Ensure the method is POST
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
   const { email } = req.body;
+  const cookies = parse(req.headers.cookie || '');
+  const cookieEmail = cookies.userEmail;
+  const emailToUse = email || cookieEmail;
 
-  // Try to get the email from the cookie if it is not in the body
-  const cookies = parse(req.headers.cookie || ''); // Parse cookies from the request
-  const cookieEmail = cookies.userEmail; // Cookie set earlier in the frontend
-
-  const emailToUse = email || cookieEmail; // Use email from body or cookie
-
-  // Ensure we have an email to proceed
   if (!emailToUse) {
     return res.status(400).json({ error: 'Email is required' });
   }
 
   try {
-    // Connect to the database
     pool = await sql.connect(config);
 
-    // Query the database to fetch the user
     const result = await pool.request()
       .input('email', sql.VarChar, emailToUse.trim().toLowerCase())
       .query(`
-        SELECT id, name, email, pool, benefit
+        SELECT id, name, email, pool, benefit, claimStatus
         FROM Users
         WHERE LOWER(email) = @email
       `);
 
-    // Check if a user was found
     if (result.recordset.length === 0) {
       return res.status(404).json({ error: 'User not found' });
     }
 
     const user = result.recordset[0];
+
+    // Prevent fetching if the user has a 'Deceased' status
+    if (user.claimStatus && user.claimStatus.toLowerCase() === 'deceased') {
+      return res.status(403).json({ error: 'This Policyholder has a Deceased record already' });
+    }
+
     res.status(200).json({ user });
 
   } catch (err) {

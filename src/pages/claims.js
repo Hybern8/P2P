@@ -37,20 +37,24 @@ export default function ClaimsPage() {
     try {
       const response = await axios.post('/api/fetchUserByEmail', {
         email: emailToFetch.trim().toLowerCase(),
-        timestamp: new Date().getTime() // To prevent caching
+        timestamp: new Date().getTime()
       });
-
+  
       if (response.data.user) {
         setUserData(response.data.user);
-        // Optionally store the email in cookies for future use
-        document.cookie = `userEmail=${emailToFetch.trim().toLowerCase()}; path=/; max-age=31536000`; // Store cookie for 1 year
+        document.cookie = `userEmail=${emailToFetch.trim().toLowerCase()}; path=/; max-age=31536000`;
       } else {
         setUserData(null);
         setMessage('❌ User not found.');
       }
+  
     } catch (error) {
       setUserData(null);
-      setMessage('❌ Error fetching user data.');
+      if (error.response?.status === 403 && error.response?.data?.error) {
+        setMessage(`❌ ${error.response.data.error}`);
+      } else {
+        setMessage('❌ Error fetching user data.');
+      }
     } finally {
       setLoading(false);
     }
