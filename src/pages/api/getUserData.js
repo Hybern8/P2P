@@ -30,7 +30,7 @@ export default async function handler(req, res) {
     const result = await pool.request()
       .input('userId', sql.Int, userId)
       .query(`
-        SELECT id, name, email, policy, premium, claimStatus, pool, benefit, noClaimRefund, startDate
+        SELECT id, name, email, policy, premium, claimStatus, pool, benefit, noClaimRefund, startDate, endDate
         FROM Users 
         WHERE id = @userId
       `);

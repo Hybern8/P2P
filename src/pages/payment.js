@@ -36,7 +36,7 @@ export default function Payment() {
         const riskPremium = benefit * qx_loess;
         const reinsurancePremium = 0.1 * riskPremium;
         const regulatorFee = 0.01 * riskPremium;
-        const opsFee = 2000;
+        const opsFee = 0.002 * benefit; // 0.2% of sum assured
         const totalPremium = riskPremium + reinsurancePremium + regulatorFee + opsFee;
 
         // Save contribution details

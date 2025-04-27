@@ -21,7 +21,7 @@ export default function Home() {
 
       <div className="mt-4">
         <Link href="/claims">
-          <button className="bg-orange-500 text-white px-6 py-2 rounded-full text-xl">
+          <button className="bg-gray-500 text-white px-6 py-2 rounded-full text-xl">
             Submit Claim
           </button>
         </Link>

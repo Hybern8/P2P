@@ -112,6 +112,7 @@ export default function ClaimsPage() {
         <div className="border p-4 mb-4 bg-gray-100 rounded">
           <p><strong>Name:</strong> {userData.name}</p>
           <p><strong>Pool:</strong> {userData.pool}</p>
+          <p><strong>Pool Point:</strong> {userData.pool_point}</p>
           <p><strong>Benefit:</strong> ₦{userData.benefit}</p>
         </div>
       )}

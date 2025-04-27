@@ -44,7 +44,7 @@ export default async function handler(req, res) {
     const userResult = await pool.request()
       .input('userId', sql.Int, userId)
       .query(`
-        SELECT email, pool, benefit
+        SELECT email, pool, benefit, pool_point
         FROM Users
         WHERE id = @userId
       `);
@@ -53,7 +53,7 @@ export default async function handler(req, res) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    const { email, pool: userPool, benefit } = userResult.recordset[0];
+    const { email, pool: userPool, benefit, pool_point } = userResult.recordset[0];
 
     // ✅ Insert claim into Claims table
     await pool.request()
@@ -61,6 +61,7 @@ export default async function handler(req, res) {
       .input('userEmail', sql.VarChar(100), email)
       .input('pool', sql.VarChar(50), userPool)
       .input('benefit', sql.Int, benefit)
+      .input('pool_point', sql.Int, pool_point)
       .input('causeOfDeath', sql.VarChar(255), causeOfDeath)
       .input('dateOfDeath', sql.Date, dateOfDeath)
       .input('claimantName', sql.VarChar(100), claimantName)
@@ -70,13 +71,13 @@ export default async function handler(req, res) {
       .input('accountNumber', sql.VarChar(30), accountNumber)
       .query(`
         INSERT INTO Claims (
-          userID, email, pool, benefit,
+          userID, email, pool, benefit, pool_point,
           cause_of_death, date_of_death,
           claimant, claimant_email, claimant_phone,
           bank_name, account_number
         )
         VALUES (
-          @userId, @userEmail, @pool, @benefit,
+          @userId, @userEmail, @pool, @benefit, @pool_point,
           @causeOfDeath, @dateOfDeath,
           @claimantName, @claimantEmail, @phone,
           @bankName, @accountNumber

@@ -35,7 +35,7 @@ export default async function handler(req, res) {
     const result = await pool.request()
       .input('email', sql.VarChar, emailToUse.trim().toLowerCase())
       .query(`
-        SELECT id, name, email, pool, benefit, claimStatus
+        SELECT id, name, email, pool, benefit, pool_point, claimStatus
         FROM Users
         WHERE LOWER(email) = @email
       `);

@@ -31,6 +31,18 @@ function calculateAgeNextBirthday(dobStr) {
   return currentMonth >= birthMonth ? age + 1 : age;
 }
 
+// Utility to calculate End Date (+12 months)
+function calculateEndDate(startDateStr) {
+  const startDate = new Date(startDateStr);
+  startDate.setFullYear(startDate.getFullYear() + 1);
+  return startDate.toISOString().split('T')[0]; // Format as 'YYYY-MM-DD'
+}
+// Utility to calculate pool_point
+function calculatePoolPoint(pool_pointStr) {
+  const pool_point = benefit / 1000000
+  return pool_point
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method Not Allowed' });
@@ -59,6 +71,8 @@ export default async function handler(req, res) {
   if (!validOccupations.includes(occupation)) return res.status(400).json({ error: 'Invalid occupation' });
 
   const ageNextBirthday = calculateAgeNextBirthday(dob);
+  const endDate = calculateEndDate(startDate);  // 🆕 Calculate end date
+  const pool_point = benefit / 1000000; // calculte pool_point
 
   let db;
   try {
@@ -80,7 +94,9 @@ export default async function handler(req, res) {
       .input('userId', sql.Int, userId)
       .input('policy', sql.VarChar, policy)
       .input('benefit', sql.Int, benefit)
+      .input('pool_point', sql.Int, pool_point) // pool_point input
       .input('startDate', sql.Date, startDate)
+      .input('endDate', sql.Date, endDate) // new field
       .input('dob', sql.Date, dob)
       .input('gender', sql.VarChar, gender)
       .input('occupation', sql.VarChar, occupation)
@@ -90,7 +106,9 @@ export default async function handler(req, res) {
         UPDATE Users
         SET policy = @policy,
             benefit = @benefit,
+            pool_point = @pool_point,
             startDate = @startDate,
+            endDate = @endDate,
             dob = @dob,
             gender = @gender,
             occupation = @occupation,
@@ -106,7 +124,8 @@ export default async function handler(req, res) {
     return res.status(200).json({
       message: 'Policy info updated successfully',
       ageNextBirthday,
-      pool: matchedPool
+      pool: matchedPool,
+      endDate // return endDate too if needed
     });
   } catch (err) {
     console.error('Error updating user:', err);

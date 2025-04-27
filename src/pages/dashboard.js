@@ -33,9 +33,22 @@ export default function Dashboard() {
 
   if (loading) return <p>Loading dashboard...</p>;
   if (!userData) return <p>Error: Unable to load user data.</p>;
+  console.log('UserData:', userData); //check errors
+
+  const isValidDate = (date) => {
+    return date && !isNaN(new Date(date).getTime());
+  };
 
   const formattedStartDate = userData.startDate
     ? new Date(userData.startDate).toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+      })
+    : 'N/A';
+
+  const formattedEndDate = userData.endDate
+    ? new Date(userData.endDate).toLocaleDateString('en-GB', {
         day: '2-digit',
         month: 'short',
         year: 'numeric'
@@ -52,6 +65,7 @@ export default function Dashboard() {
         <p><strong>Pool:</strong> {userData.pool}</p>
         <p><strong>Benefit:</strong> ₦{Number(userData.benefit).toLocaleString()}</p>
         <p><strong>Policy Start Date:</strong> {formattedStartDate}</p>
+        <p><strong>Policy End Date:</strong> {formattedEndDate}</p>
         <p><strong>Premium Paid:</strong> ₦{totalContributions.toLocaleString()}</p>
         <p><strong>Expected Refund:</strong> ₦{Number(userData.noClaimRefund || 0).toLocaleString()}</p>
       </div>
