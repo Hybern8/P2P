@@ -61,9 +61,10 @@ export default async function handler(req, res) {
     await db.request()
       .input('userId', sql.Int, userId)
       .input('totalPremium', sql.Float, totalPremium)
+      .input('riskPremium', sql.Float, riskPremium)
       .query(`
         UPDATE Users
-        SET premium = @totalPremium
+        SET premium = @totalPremium, riskPremium = @riskPremium
         WHERE id = @userId
       `);
 
