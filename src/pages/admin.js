@@ -29,7 +29,7 @@ export default function AdminPage() {
       <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
 
       <div className="flex space-x-4 mb-6">
-        {['users', 'contributions', 'claims'].map((tab) => (
+        {['users', 'contributions', 'claims', 'refunds'].map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
