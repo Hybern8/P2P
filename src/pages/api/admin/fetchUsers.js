@@ -16,7 +16,7 @@ export default async function handler(req, res) {
   let pool;
   try {
     pool = await sql.connect(config);
-    const result = await pool.request().query('SELECT id, name, email, pool, pool_point, claimStatus, noClaimRefund FROM Users');
+    const result = await pool.request().query('SELECT id, name, email, pool, pool_point, claimStatus, noClaimRefund, refunded FROM Users');
     res.status(200).json(result.recordset);
   } catch (err) {
     console.error('Fetch Users Error:', err);

@@ -18,18 +18,7 @@ export default async function handler(req, res) {
     pool = await sql.connect(config);
 
     const result = await pool.request().query(`
-      SELECT 
-        id,
-        email,
-        pool,
-        pool_point,
-        noClaimRefund,
-        endDate
-      FROM Users
-      WHERE noClaimRefund > 0
-        AND endDate IS NOT NULL
-        AND endDate <= GETDATE()
-    `);
+      SELECT * FROM RefundSummary`);
 
     res.status(200).json(result.recordset);
   } catch (err) {
